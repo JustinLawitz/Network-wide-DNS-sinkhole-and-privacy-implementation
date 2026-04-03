@@ -7,13 +7,21 @@ After deploying new UniFi hardware and implementing VLANs to simulate an enterpr
 ## New Hardware:
 
 For this project I bought multiple pieces of hardware, involving the PoE switch, Raspberry Pi, Micro SD card for the Raspberry Pi OS, etc. The biggest thing I learned about the hardware I used for this project was the difference between an OTG ethernet adapter Vs. a PoE splitter. I’ll later explain the circumstances that I learned this difference, but an OTG (On-The-Go) ethernet adapter converts USB data signals into Ethernet signals and swaps the role of a device from a Peripheral (listens to other devices), to a Host (can power and manage other devices) so it can recognize the adapter as a network device and send traffic through it. The one issue with this is that it doesn’t provide power to the device, but only transmits data. A PoE splitter takes a single ethernet cable carrying both data and power from a PoE switch and splits it into 2 separate connections, one for power and one for data, this is especially useful for devices far from a power outlet. In my case I used an OTG ethernet adapter. The full list of hardware is as follows (Figure 1):
+
 1 USW Ultra Ubiquiti PoE Switch
+
 1 Raspberry Pi Zero 2 W
+
 1 GeeekPi Pi Zero 2 W case
+
 1 Micro SD card
+
 1 OTG ethernet adapter
+
 1 SD card reader
+
 1 Cat 5E ethernet cable
+
 1 IJP 27W power supply adapter
 
 <img width="975" height="731" alt="image" src="https://github.com/user-attachments/assets/cc571cbc-9e3d-4100-b208-848afe61354b" />
