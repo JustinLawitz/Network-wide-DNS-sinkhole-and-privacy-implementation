@@ -247,3 +247,39 @@ The final test I did was using my laptop connected to the Guest network to run t
 <img width="975" height="561" alt="image" src="https://github.com/user-attachments/assets/66340107-c2b7-4ba1-be9c-34a0b9bfbb5d" />
 
 Figure 32: Pi-hole blocking doubleclick.com
+
+## Step 24.
+
+A couple days after completing the documentation I came accross a video discussing how to use Unbound along with Pi-hole. Unbound is a local DNS resolver, meaning you would no reliance on external DNS providers like google and it provides better privacy. I was able to set this up by using SSH to connect to the Pi-hole and running the command "sudo apt install unbound -y". After installing unbound I edited the configuration file with the command "sudo nano /etc/unbound/unbound.conf.d/pihole.conf" and entered the recommended settings from Pi-hole's documentation (Figure 33).
+
+<img width="1121" height="634" alt="Screenshot 2026-04-06 192515" src="https://github.com/user-attachments/assets/751a100f-3968-4303-a781-58a0505d97ac" />
+
+Figure 33: Recommended settings from Pi-hole documentation
+
+## Step 25.
+
+After saving the changes to the configuration file, I next used the commands "systemctl enable unbound" which tells the OS to automatically start unbound as the computer boots, and "systemctl restart unbound" which stops the running unbound process and then starts it again, I did this as in Linux, most services only read their configuration files once wgen started, so I wanted to make sure it read the configuration file I had just made changes to (Figure 34).
+
+<img width="1122" height="634" alt="Screenshot 2026-04-06 192818" src="https://github.com/user-attachments/assets/576770d0-7404-4618-8253-a8291c91031e" />
+
+Figure 34: Enableing and restarting unbound
+
+## Step 26.
+
+Next, I entered the admin page for the Pi-hole, and went to the DNS settings where I was able to remove cloudflare as the upstream DNS provider, and add the local instance of unbound in the custom DNS server settings by entering 127.0.0.1#5335 (where 5335 is the port unbound typically runs on). In the interface settings, I also enabled Permit all origins. This ensured that DNS queries coming from different VLANs were accepted by the Pi-hole service, which then resolved them through the local Unbound instance (Figure 35).
+
+<img width="1253" height="1096" alt="Screenshot 2026-04-06 195851" src="https://github.com/user-attachments/assets/a4d67204-f3da-4855-87bc-a4f317e3f49e" />
+
+Figure 35: Changed upstream DNS provider and interface settings in Pi-hole admin page
+
+## Step 27.
+
+To test that unbound was working I used the dig command. The dig command allows us to see the entire conversation between your computer and the DNS server, including the raw data being exchanged. First I used the command "dig google.com" to make sure unbound could resolve the IP of a working site. The NOERROR status meant it was successfully resolved, along with the bottom of the output listing the static IP of the Pi-hole service as the server (Figure 36). I also used the command "dig @127.0.0.1 -p 53 sigfail.verteiltesysteme.net". The link in this command is specifically made to be essentially broken and should not be able to be resolved successfully if unbound is working correctly. The output of this command, specifically the SERVFAIL status and 127.0.0.1#53 as the server means that Pi-hole is now handing requests off to itself locally (Figure 37).
+
+<img width="1124" height="543" alt="Screenshot 2026-04-06 194153" src="https://github.com/user-attachments/assets/41fe30f0-a9db-4080-801a-7b0eccf2bedb" />
+
+Figure 36: Output of dig google.com
+
+<img width="1122" height="633" alt="Screenshot 2026-04-06 194541" src="https://github.com/user-attachments/assets/1be9e820-a236-4279-a88f-8bd653d443a7" />
+
+Figure 37: Output of dig @127.0.0.1 -p 53 sigfail.verteiltesysteme.net
